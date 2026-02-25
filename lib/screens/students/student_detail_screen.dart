@@ -24,6 +24,7 @@ class StudentDetailScreen extends StatefulWidget {
 class _StudentDetailScreenState extends State<StudentDetailScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  bool _showPracticedOnly = false;
 
   final _syllabusRepository = SyllabusRepository();
   final _sessionRepository  = SessionRepository();
@@ -187,65 +188,108 @@ class _StudentDetailScreenState extends State<StudentDetailScreen>
       return const Center(child: Text('No syllabus data found.'));
     }
 
-    return ListView.builder(
-      itemCount: _groups.length,
-      itemBuilder: (context, index) {
-        final group = _groups[index];
-        final groupItems = _items
-            .where((i) => i.groupId == group.id)
-            .toList();
-        final isExpanded = _expanded[group.id] ?? true;
-
-        return Card(
-          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          child: Column(
+    return Column(
+      children: [
+        // Toggle bar
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+          child: Row(
             children: [
-              // Group header
-              InkWell(
-                onTap: () {
-                  setState(() {
-                    _expanded[group.id] = !isExpanded;
-                  });
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 12,
-                  ),
-                  child: Row(
-                    children: [
-                      Text(
-                        group.code,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          group.title,
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      ),
-                      Icon(
-                        isExpanded
-                            ? Icons.expand_less
-                            : Icons.expand_more,
-                      ),
-                    ],
-                  ),
-                ),
+              const Text(
+                'Show:',
+                style: TextStyle(fontSize: 13, color: Colors.grey),
               ),
-
-              // Items
-              if (isExpanded) ...[
-                const Divider(height: 1),
-                ...groupItems.map((item) => _buildItemRow(item)),
-              ],
+              const SizedBox(width: 8),
+              ChoiceChip(
+                label: const Text('All Items'),
+                selected: !_showPracticedOnly,
+                onSelected: (_) => setState(() => _showPracticedOnly = false),
+              ),
+              const SizedBox(width: 8),
+              ChoiceChip(
+                label: const Text('Practiced Only'),
+                selected: _showPracticedOnly,
+                onSelected: (_) => setState(() => _showPracticedOnly = true),
+              ),
             ],
           ),
-        );
-      },
+        ),
+
+        // Syllabus list
+        Expanded(
+          child: ListView.builder(
+            itemCount: _groups.length,
+            itemBuilder: (context, index) {
+              final group = _groups[index];
+              final groupItems = _items
+                  .where((i) => i.groupId == group.id)
+                  .where((i) => _showPracticedOnly
+                  ? _currentLevel.containsKey(i.id)
+                  : true)
+                  .toList();
+
+              if (_showPracticedOnly && groupItems.isEmpty) {
+                return const SizedBox.shrink();
+              }
+
+              final isExpanded = _expanded[group.id] ?? true;
+              final loggedCount = groupItems
+                  .where((i) => _currentLevel.containsKey(i.id))
+                  .length;
+
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Column(
+                  children: [
+                    // Group header
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          _expanded[group.id] = !isExpanded;
+                        });
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12,
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              group.code,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                group.title,
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                            ),
+                            Icon(
+                              isExpanded
+                                  ? Icons.expand_less
+                                  : Icons.expand_more,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Items
+                    if (isExpanded) ...[
+                      const Divider(height: 1),
+                      ...groupItems.map((item) => _buildItemRow(item)),
+                    ],
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 import '../../database/repositories/aircraft_repository.dart';
 import '../../database/repositories/session_repository.dart';
 import '../../database/repositories/syllabus_repository.dart';
 import '../../models/aircraft.dart';
 import '../../models/session_item.dart';
+import '../../models/syllabus_group.dart';
 import '../../models/syllabus_item.dart';
 import '../../models/training_session.dart';
 
@@ -22,7 +24,7 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
 
   final _durationController = TextEditingController();
   final _notesController    = TextEditingController();
-  late DateTime _sessionDate;
+  late DateTime _sessionDate = DateTime.now();
 
   List<SessionItem>      _items       = [];
   Map<int, SyllabusItem> _syllabusMap = {};
@@ -175,6 +177,53 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
     await _sessionRepository.deleteSessionAndItems(widget.session.id);
     if (!mounted) return;
     Navigator.of(context).pop();
+  }
+
+  Future<void> _showAddItemsSheet() async {
+    final groups = await _syllabusRepository.getGroups();
+    final items  = await _syllabusRepository.getItems();
+
+    final loggedItemIds = _items.map((i) => i.itemId).toSet();
+
+    if (!mounted) return;
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => _AddItemsSheet(
+        groups:        groups,
+        items:         items,
+        loggedItemIds: loggedItemIds,
+        onItemLevel:   _addItemToSession,
+      ),
+    );
+
+    // Reload items after sheet closes so the list reflects any additions
+    if (!mounted) return;
+    final updatedItems = await _sessionRepository.getItemsForSession(
+      widget.session.id,
+    );
+    setState(() {
+      _items = updatedItems;
+    });
+  }
+
+  Future<void> _addItemToSession(SyllabusItem item, String level) async {
+    final now         = DateTime.now().toIso8601String();
+    final sessionItem = SessionItem(
+      id:        const Uuid().v4(),
+      sessionId: widget.session.id,
+      itemId:    item.id,
+      level:     level,
+      timestamp: now,
+    );
+    final saved = await _sessionRepository.insertItem(sessionItem);
+    setState(() {
+      _items.add(saved);
+    });
   }
 
   void _toggleEditMode() {
@@ -558,7 +607,21 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
           ),
 
           // Delete session button — only in edit mode
-          if (_editMode)
+          if (_editMode) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: _showAddItemsSheet,
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add Items'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.all(16),
               child: SizedBox(
@@ -575,8 +638,259 @@ class _SessionDetailScreenState extends State<SessionDetailScreen> {
                 ),
               ),
             ),
+    ],
         ],
       ),
+    );
+  }
+}
+
+class _AddItemsSheet extends StatefulWidget {
+  final List<SyllabusGroup>              groups;
+  final List<SyllabusItem>               items;
+  final Set<int>                         loggedItemIds;
+  final Future<void> Function(SyllabusItem, String) onItemLevel;
+
+  const _AddItemsSheet({
+    required this.groups,
+    required this.items,
+    required this.loggedItemIds,
+    required this.onItemLevel,
+  });
+
+  @override
+  State<_AddItemsSheet> createState() => _AddItemsSheetState();
+}
+
+class _AddItemsSheetState extends State<_AddItemsSheet> {
+  static const List<String> _levels = ['L1', 'L2', 'L3', 'RES', 'PRO'];
+
+  Map<int, bool> _groupExpanded = {};
+  int?           _expandedItemId;
+
+  @override
+  void initState() {
+    super.initState();
+    // Default all groups collapsed in the sheet
+    for (final g in widget.groups) {
+      _groupExpanded[g.id] = false;
+    }
+  }
+
+  Widget _buildLevelButton(SyllabusItem item, String level) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 2),
+      child: ElevatedButton(
+        onPressed: () async {
+          await widget.onItemLevel(item, level);
+          if (!mounted) return;
+          Navigator.of(context).pop();
+        },
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          minimumSize: const Size(0, 36),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        child: Text(
+          level,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildItemRow(SyllabusItem item) {
+    final isLogged   = widget.loggedItemIds.contains(item.id);
+    final isExpanded = _expandedItemId == item.id;
+
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: Color(0xFFEEEEEE))),
+      ),
+      child: Column(
+        children: [
+          InkWell(
+            onTap: isLogged
+                ? null
+                : () {
+              setState(() {
+                _expandedItemId = isExpanded ? null : item.id;
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 10,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.code,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: isLogged
+                                ? Colors.grey.shade400
+                                : Colors.grey,
+                          ),
+                        ),
+                        Text(
+                          item.title,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: isLogged
+                                ? Colors.grey.shade400
+                                : Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (isLogged)
+                    Text(
+                      'already logged',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey.shade400,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    )
+                  else
+                    Icon(
+                      isExpanded
+                          ? Icons.expand_less
+                          : Icons.expand_more,
+                      size: 18,
+                      color: Colors.grey,
+                    ),
+                ],
+              ),
+            ),
+          ),
+
+          // Inline level selector
+          if (isExpanded)
+            Container(
+              color: Theme.of(context).colorScheme.surface,
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: Row(
+                children: _levels
+                    .map((l) => _buildLevelButton(item, l))
+                    .toList(),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.75,
+      minChildSize:     0.5,
+      maxChildSize:     0.95,
+      expand:           false,
+      builder: (context, scrollController) {
+        return Column(
+          children: [
+            // Handle
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                'Add Items',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const Divider(height: 1),
+
+            // Syllabus groups and items
+            Expanded(
+              child: ListView.builder(
+                controller: scrollController,
+                itemCount: widget.groups.length,
+                itemBuilder: (context, index) {
+                  final group      = widget.groups[index];
+                  final groupItems = widget.items
+                      .where((i) => i.groupId == group.id)
+                      .toList();
+                  final isExpanded = _groupExpanded[group.id] ?? false;
+
+                  return Card(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    child: Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              _groupExpanded[group.id] = !isExpanded;
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
+                            ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  group.code,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    group.title,
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
+                                ),
+                                Icon(
+                                  isExpanded
+                                      ? Icons.expand_less
+                                      : Icons.expand_more,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        if (isExpanded) ...[
+                          const Divider(height: 1),
+                          ...groupItems.map((item) => _buildItemRow(item)),
+                        ],
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
