@@ -3,7 +3,7 @@ class TrainingSession {
   final int     studentId;
   final int     instructorId;
   final String  sessionDate;
-  final String? aircraft;
+  final int?    aircraftId;        // changed from aircraft
   final int?    durationMinutes;
   final String? notes;
   final bool    synced;
@@ -13,7 +13,7 @@ class TrainingSession {
     required this.studentId,
     required this.instructorId,
     required this.sessionDate,
-    this.aircraft,
+    this.aircraftId,               // changed
     this.durationMinutes,
     this.notes,
     this.synced = false,
@@ -25,7 +25,7 @@ class TrainingSession {
       studentId:       map['student_id']       as int,
       instructorId:    map['instructor_id']    as int,
       sessionDate:     map['session_date']     as String,
-      aircraft:        map['aircraft']         as String?,
+      aircraftId:      map['aircraft_id']      as int?,   // changed
       durationMinutes: map['duration_minutes'] as int?,
       notes:           map['notes']            as String?,
       synced:          (map['synced']          as int) == 1,
@@ -38,7 +38,7 @@ class TrainingSession {
       'student_id':       studentId,
       'instructor_id':    instructorId,
       'session_date':     sessionDate,
-      'aircraft':         aircraft,
+      'aircraft_id':      aircraftId,            // changed
       'duration_minutes': durationMinutes,
       'notes':            notes,
       'synced':           synced ? 1 : 0,
@@ -51,7 +51,7 @@ class TrainingSession {
       'student_id':       studentId,
       'instructor_id':    instructorId,
       'session_date':     sessionDate,
-      'aircraft':         aircraft,
+      'aircraft_id':      aircraftId,            // changed
       'duration_minutes': durationMinutes,
       'notes':            notes,
     };
@@ -62,7 +62,7 @@ class TrainingSession {
     int?    studentId,
     int?    instructorId,
     String? sessionDate,
-    String? aircraft,
+    int?    aircraftId,                          // changed
     int?    durationMinutes,
     String? notes,
     bool?   synced,
@@ -72,7 +72,7 @@ class TrainingSession {
       studentId:       studentId       ?? this.studentId,
       instructorId:    instructorId    ?? this.instructorId,
       sessionDate:     sessionDate     ?? this.sessionDate,
-      aircraft:        aircraft        ?? this.aircraft,
+      aircraftId:      aircraftId      ?? this.aircraftId,  // changed
       durationMinutes: durationMinutes ?? this.durationMinutes,
       notes:           notes           ?? this.notes,
       synced:          synced          ?? this.synced,

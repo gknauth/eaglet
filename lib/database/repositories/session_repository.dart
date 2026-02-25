@@ -147,4 +147,38 @@ class SessionRepository {
     );
     return item;
   }
+
+  Future<void> delete(String sessionId) async {
+    final db = await _db;
+    await db.delete(
+      'training_sessions',
+      where:     'id = ?',
+      whereArgs: [sessionId],
+    );
+  }
+
+  // Delete a single session item
+  Future<void> deleteItem(String itemId) async {
+    final db = await _db;
+    await db.delete(
+      'session_items',
+      where:     'id = ?',
+      whereArgs: [itemId],
+    );
+  }
+
+  // Delete a session and all its items
+  Future<void> deleteSessionAndItems(String sessionId) async {
+    final db = await _db;
+    await db.delete(
+      'session_items',
+      where:     'session_id = ?',
+      whereArgs: [sessionId],
+    );
+    await db.delete(
+      'training_sessions',
+      where:     'id = ?',
+      whereArgs: [sessionId],
+    );
+  }
 }

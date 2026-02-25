@@ -1,4 +1,3 @@
-// lib/database/database_helper.dart
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'seed_data.dart';
@@ -17,23 +16,56 @@ class DatabaseHelper {
 
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'eaglet.db');
+    final path   = join(dbPath, 'eaglet.db');
 
     return await openDatabase(
       path,
-      version: 1,
-      onCreate: _onCreate,
+      version: 3,
+      onCreate:  _onCreate,
+      onUpgrade: _onUpgrade,
     );
   }
 
   Future<void> _onCreate(Database db, int version) async {
+    await _createAllTables(db);
+    await _seedSyllabus(db);
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS aircraft (
+          id          INTEGER PRIMARY KEY,
+          tail_number TEXT NOT NULL,
+          make_model  TEXT,
+          notes       TEXT,
+          created_at  TEXT NOT NULL
+        )
+      ''');
+    }
+    if (oldVersion < 3) {
+      // Recreate aircraft table with UNIQUE constraint
+      await db.execute('DROP TABLE IF EXISTS aircraft');
+      await db.execute('''
+      CREATE TABLE aircraft (
+        id          INTEGER PRIMARY KEY,
+        tail_number TEXT NOT NULL UNIQUE,
+        make_model  TEXT,
+        notes       TEXT,
+        created_at  TEXT NOT NULL
+      )
+    ''');
+    }
+  }
+
+  Future<void> _createAllTables(Database db) async {
     await db.execute('''
       CREATE TABLE instructors (
-        id           INTEGER PRIMARY KEY,
-        name         TEXT NOT NULL,
-        certificate  TEXT,
-        notes        TEXT,
-        created_at   TEXT NOT NULL
+        id          INTEGER PRIMARY KEY,
+        name        TEXT NOT NULL,
+        certificate TEXT,
+        notes       TEXT,
+        created_at  TEXT NOT NULL
       )
     ''');
 
@@ -46,11 +78,21 @@ class DatabaseHelper {
 
     await db.execute('''
       CREATE TABLE students (
-        id           INTEGER PRIMARY KEY,
-        name         TEXT NOT NULL,
-        cert_level   TEXT,
-        notes        TEXT,
-        created_at   TEXT NOT NULL
+        id          INTEGER PRIMARY KEY,
+        name        TEXT NOT NULL,
+        cert_level  TEXT,
+        notes       TEXT,
+        created_at  TEXT NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE aircraft (
+        id          INTEGER PRIMARY KEY,
+        tail_number TEXT NOT NULL,
+        make_model  TEXT,
+        notes       TEXT,
+        created_at  TEXT NOT NULL
       )
     ''');
 
@@ -79,12 +121,13 @@ class DatabaseHelper {
         student_id       INTEGER NOT NULL,
         instructor_id    INTEGER NOT NULL,
         session_date     TEXT NOT NULL,
-        aircraft         TEXT,
+        aircraft_id      INTEGER,
         duration_minutes INTEGER,
         notes            TEXT,
         synced           INTEGER DEFAULT 0,
         FOREIGN KEY (student_id)    REFERENCES students(id),
-        FOREIGN KEY (instructor_id) REFERENCES instructors(id)
+        FOREIGN KEY (instructor_id) REFERENCES instructors(id),
+        FOREIGN KEY (aircraft_id)   REFERENCES aircraft(id)
       )
     ''');
 
@@ -118,20 +161,16 @@ class DatabaseHelper {
         FOREIGN KEY (item_id)    REFERENCES syllabus_items(id)
       )
     ''');
-
-    await _seedSyllabus(db);
   }
 
   Future<void> _seedSyllabus(Database db) async {
     final batch = db.batch();
-
     for (final group in syllabusGroups) {
       batch.insert('syllabus_groups', group);
     }
     for (final item in syllabusItems) {
       batch.insert('syllabus_items', item);
     }
-
     await batch.commit(noResult: true);
   }
 }

@@ -9,6 +9,9 @@ import '../../database/repositories/syllabus_repository.dart';
 import '../../database/repositories/session_repository.dart';
 import '../../database/repositories/prep_repository.dart';
 import '../sessions/new_session_screen.dart';
+import '../sessions/session_detail_screen.dart';
+import '../../database/repositories/aircraft_repository.dart';
+import '../../models/aircraft.dart';
 
 class StudentDetailScreen extends StatefulWidget {
   final Student student;
@@ -25,6 +28,8 @@ class _StudentDetailScreenState extends State<StudentDetailScreen>
   final _syllabusRepository = SyllabusRepository();
   final _sessionRepository  = SessionRepository();
   final _prepRepository     = PrepRepository();
+  final _aircraftRepository = AircraftRepository();
+  Map<int, Aircraft> _aircraftMap = {};
 
   List<SyllabusGroup> _groups = [];
   List<SyllabusItem>  _items  = [];
@@ -68,6 +73,11 @@ class _StudentDetailScreenState extends State<StudentDetailScreen>
     final items    = await _syllabusRepository.getItems();
     final preps    = await _prepRepository.getForStudent(widget.student.id!);
     final sessions = await _sessionRepository.getForStudent(widget.student.id!);
+    final aircraftList = await _aircraftRepository.getAll();
+    final aircraftMap  = <int, Aircraft>{};
+    for (final a in aircraftList) {
+      aircraftMap[a.id!] = a;
+    }
 
     // Build prep map
     final prepMap = <int, StudentItemPrep>{};
@@ -118,6 +128,7 @@ class _StudentDetailScreenState extends State<StudentDetailScreen>
       _expanded           = expanded;
       _sessions           = sessions;
       _sessionItemCounts  = sessionItemCounts;
+      _aircraftMap        = aircraftMap;
       _isLoading          = false;
     });
   }
@@ -348,15 +359,21 @@ class _StudentDetailScreenState extends State<StudentDetailScreen>
           title: Text(dateStr),
           subtitle: Text(
             [
-              if (session.aircraft != null) session.aircraft!,
+              if (session.aircraftId != null)
+              _aircraftMap[session.aircraftId]?.displayName ?? 'Unknown aircraft',
               '$count item${count == 1 ? '' : 's'} covered',
               if (session.durationMinutes != null)
                 '${session.durationMinutes} min',
             ].join(' · '),
           ),
           trailing: const Icon(Icons.chevron_right),
-          onTap: () {
-            // Session detail screen — coming soon
+          onTap: () async {
+            await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => SessionDetailScreen(session: session),
+              ),
+            );
+            _loadData();
           },
         );
       },
