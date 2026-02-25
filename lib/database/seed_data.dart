@@ -1,0 +1,126 @@
+// syllabus_seed.dart
+
+const List<Map<String, dynamic>> syllabusGroups = [
+  {'id': 1, 'code': 'PRE', 'title': 'Orientation, Pre/Post-Flight'},
+  {'id': 2, 'code': 'TO',  'title': 'Takeoffs'},
+  {'id': 3, 'code': 'TOW', 'title': 'Aerotow'},
+  {'id': 4, 'code': 'MAN', 'title': 'In-Flight Maneuvers'},
+  {'id': 5, 'code': 'PAT', 'title': 'Landing Patterns'},
+  {'id': 6, 'code': 'LND', 'title': 'Landings'},
+  {'id': 7, 'code': 'LFT', 'title': 'Flying in Lift'},
+  {'id': 8, 'code': 'EP',  'title': 'Emergency Procedures'},
+  {'id': 9, 'code': 'ADM', 'title': 'Aeronautical Decision Making'},
+];
+
+const List<Map<String, dynamic>> syllabusItems = [
+  // PRE - Orientation, Pre/Post-Flight
+  {'id': 1010, 'group_id': 1, 'stage': 1, 'code': 'PRE.1FC',             'title': 'Primary Flight Controls'},
+  {'id': 1020, 'group_id': 1, 'stage': 1, 'code': 'PRE.2FC',             'title': 'Secondary Flight Controls'},
+  {'id': 1030, 'group_id': 1, 'stage': 1, 'code': 'PRE.INST',            'title': 'Using the Flight Instr.'},
+  {'id': 1040, 'group_id': 1, 'stage': 2, 'code': 'PRE.GND.HNDL',        'title': 'Ground Handling'},
+  {'id': 1050, 'group_id': 1, 'stage': 2, 'code': 'PRE.INSP',            'title': 'Preflight Inspection'},
+  {'id': 1060, 'group_id': 1, 'stage': 2, 'code': 'PRE.PCC',             'title': 'Positive Control Check'},
+  {'id': 1070, 'group_id': 1, 'stage': 2, 'code': 'PRE.ROPE.INSP',       'title': 'Tow Rope Inspection'},
+  {'id': 1080, 'group_id': 1, 'stage': 3, 'code': 'PRE.SECURE',          'title': 'Securing the Glider'},
+  {'id': 1090, 'group_id': 1, 'stage': 3, 'code': 'PRE.AREA',            'title': 'Area Familiarization'},
+
+  // TO - Takeoffs
+  {'id': 2010, 'group_id': 2, 'stage': 1, 'code': 'TO.CHK',              'title': 'Takeoff Checklist'},
+  {'id': 2020, 'group_id': 2, 'stage': 1, 'code': 'TO.PROC.SIGN',        'title': 'Takeoff Proc. and Signals'},
+  {'id': 2030, 'group_id': 2, 'stage': 1, 'code': 'TO.STD',              'title': 'Takeoff'},
+  {'id': 2040, 'group_id': 2, 'stage': 2, 'code': 'TO.XWIND',            'title': 'Crosswind Takeoff'},
+  {'id': 2050, 'group_id': 2, 'stage': 3, 'code': 'TO.WO.RUNR',          'title': 'T.O. w/o a Wing Runner'},
+  {'id': 2060, 'group_id': 2, 'stage': 3, 'code': 'TO.DWIND',            'title': 'Downwind Takeoff'},
+  {'id': 2070, 'group_id': 2, 'stage': 3, 'code': 'TO.HIGH.DA',          'title': 'High Density Altitude T.O.'},
+
+  // TOW - Aerotow
+  {'id': 3010, 'group_id': 3, 'stage': 1, 'code': 'TOW.INTRO',           'title': 'Intro. to Flying the Tow'},
+  {'id': 3020, 'group_id': 3, 'stage': 1, 'code': 'TOW.FLY',             'title': 'Flying the Tow'},
+  {'id': 3030, 'group_id': 3, 'stage': 1, 'code': 'TOW.REL',             'title': 'Release from Tow'},
+  {'id': 3040, 'group_id': 3, 'stage': 1, 'code': 'TOW.SOFT.REL',        'title': 'Soft Release (Optional)'},
+  {'id': 3050, 'group_id': 3, 'stage': 2, 'code': 'TOW.WAKE',            'title': 'Shifting Through Wake'},
+  {'id': 3060, 'group_id': 3, 'stage': 2, 'code': 'TOW.STEER',           'title': 'Steering Turns'},
+  {'id': 3071, 'group_id': 3, 'stage': 2, 'code': 'TOW.FASTER',          'title': 'Aerotow Speed Up'},
+  {'id': 3072, 'group_id': 3, 'stage': 2, 'code': 'TOW.SLOWER',          'title': 'Aerotow Slow Down'},
+  {'id': 3073, 'group_id': 3, 'stage': 2, 'code': 'TOW.REL.FAIL',        'title': 'Aerotow Glider Release Failure'},
+  {'id': 3074, 'group_id': 3, 'stage': 2, 'code': 'TOW.RUDR.WAG',        'title': 'Aerotow Rudder Waggle'},
+  {'id': 3080, 'group_id': 3, 'stage': 2, 'code': 'TOW.BOX.WAKE',        'title': 'Boxing the Wake'},
+  {'id': 3090, 'group_id': 3, 'stage': 2, 'code': 'TOW.SLACK.ROPE',      'title': 'Slack Rope on Tow'},
+  {'id': 3100, 'group_id': 3, 'stage': 2, 'code': 'TOW.SLACK.TURN',      'title': 'Slack Rope in a Turn'},
+
+  // MAN - In-Flight Maneuvers
+  {'id': 4010, 'group_id': 4, 'stage': 1, 'code': 'MAN.XFER.CTRL',       'title': 'Transferring Control'},
+  {'id': 4020, 'group_id': 4, 'stage': 1, 'code': 'MAN.SCAN',            'title': 'Scanning for Traffic'},
+  {'id': 4030, 'group_id': 4, 'stage': 1, 'code': 'MAN.PITCH',           'title': 'Pitch/Speed Control'},
+  {'id': 4040, 'group_id': 4, 'stage': 1, 'code': 'MAN.TRIM',            'title': 'Using the Trim Control'},
+  {'id': 4050, 'group_id': 4, 'stage': 1, 'code': 'MAN.MED.TURN',        'title': 'Shallow/Med. Bank Turns'},
+  {'id': 4060, 'group_id': 4, 'stage': 1, 'code': 'MAN.PREC.TURN',       'title': 'Precision Turns'},
+  {'id': 4070, 'group_id': 4, 'stage': 1, 'code': 'MAN.AIRBRK',          'title': 'Airbrakes in Flight'},
+  {'id': 4080, 'group_id': 4, 'stage': 2, 'code': 'MAN.STEEP.TURN',      'title': 'Steep Turns'},
+  {'id': 4090, 'group_id': 4, 'stage': 2, 'code': 'MAN.CIRC',            'title': 'Circling Flight'},
+  {'id': 4100, 'group_id': 4, 'stage': 2, 'code': 'MAN.CRAB',            'title': 'Crabbing'},
+  {'id': 4110, 'group_id': 4, 'stage': 2, 'code': 'MAN.STALL.AHEAD',     'title': 'Stalls in Level Flight'},
+  {'id': 4120, 'group_id': 4, 'stage': 2, 'code': 'MAN.STALL.TURN',      'title': 'Stalls in a Turn'},
+  {'id': 4130, 'group_id': 4, 'stage': 2, 'code': 'MAN.SLOW.FLT',        'title': 'Slow Flight'},
+  {'id': 4140, 'group_id': 4, 'stage': 2, 'code': 'MAN.STALL.AIRBRK',    'title': 'Stalls with Airbrakes'},
+  {'id': 4150, 'group_id': 4, 'stage': 2, 'code': 'MAN.SIDE.SLIP.ALIGN', 'title': 'Side Slip - Alignment'},
+  {'id': 4160, 'group_id': 4, 'stage': 2, 'code': 'MAN.SIDE.SLIP.XWIND', 'title': 'Side Slip - Crosswind'},
+  {'id': 4170, 'group_id': 4, 'stage': 2, 'code': 'MAN.FWD.SLIP',        'title': 'Forward Slip'},
+  {'id': 4180, 'group_id': 4, 'stage': 2, 'code': 'MAN.LOW.G',           'title': 'Low-G Maneuvers'},
+  {'id': 4190, 'group_id': 4, 'stage': 3, 'code': 'MAN.SEL.CRUISE',      'title': 'Selecting Cruise Airspeed'},
+  {'id': 4200, 'group_id': 4, 'stage': 3, 'code': 'MAN.STALL.DEEP',      'title': 'Deep Stalls'},
+  {'id': 4210, 'group_id': 4, 'stage': 3, 'code': 'MAN.CHANDELLE',       'title': 'Chandelle'},
+  {'id': 4220, 'group_id': 4, 'stage': 3, 'code': 'MAN.INCIP.SPIN',      'title': 'Incipient Spins'},
+  {'id': 4230, 'group_id': 4, 'stage': 3, 'code': 'MAN.SPIN',            'title': 'Spins'},
+  {'id': 4240, 'group_id': 4, 'stage': 3, 'code': 'MAN.RPD.SPD.CHG',     'title': 'Rapid Speed Changes'},
+  {'id': 4250, 'group_id': 4, 'stage': 3, 'code': 'MAN.HIGH.SPD',        'title': 'High-Speed Flight'},
+
+  // PAT - Landing Patterns
+  {'id': 5010, 'group_id': 5, 'stage': 1, 'code': 'PAT.CHK',             'title': 'Landing Checklist'},
+  {'id': 5020, 'group_id': 5, 'stage': 1, 'code': 'PAT.INTRO',           'title': 'Intro. to the Pattern'},
+  {'id': 5030, 'group_id': 5, 'stage': 1, 'code': 'PAT.GS',              'title': 'Glide Slope Control'},
+  {'id': 5040, 'group_id': 5, 'stage': 2, 'code': 'PAT.RADIO',           'title': 'Radio Use'},
+  {'id': 5050, 'group_id': 5, 'stage': 2, 'code': 'PAT.XWIND',           'title': 'Crosswind Patterns'},
+  {'id': 5060, 'group_id': 5, 'stage': 2, 'code': 'PAT.UNUSUAL',         'title': 'Unusual Patterns'},
+  {'id': 5070, 'group_id': 5, 'stage': 2, 'code': 'PAT.FWD.SLIP.AIRBRK', 'title': 'Forward Slip w/Airbrakes'},
+  {'id': 5080, 'group_id': 5, 'stage': 2, 'code': 'PAT.TURN.SLIP',       'title': 'Turning Slips'},
+  {'id': 5090, 'group_id': 5, 'stage': 2, 'code': 'PAT.SIDE.SLIP',       'title': 'Side Slip in the Pattern'},
+  {'id': 5100, 'group_id': 5, 'stage': 3, 'code': 'PAT.NO.ALT',          'title': 'No Altimeter Pattern'},
+  {'id': 5110, 'group_id': 5, 'stage': 3, 'code': 'PAT.NO.ALT.AS',       'title': 'No Alt./Airspeed Pattern'},
+  {'id': 5120, 'group_id': 5, 'stage': 3, 'code': 'PAT.NO.AIRBRK',       'title': 'No Airbrake Pattern'},
+  {'id': 5130, 'group_id': 5, 'stage': 3, 'code': 'PAT.FULL.AIRBRK',     'title': 'Full Airbrake Pattern'},
+
+  // LND - Landings
+  {'id': 6010, 'group_id': 6, 'stage': 1, 'code': 'LND.INTRO',           'title': 'Intro. to the Landing'},
+  {'id': 6020, 'group_id': 6, 'stage': 2, 'code': 'LND.PREC',            'title': 'Precision Landings'},
+  {'id': 6030, 'group_id': 6, 'stage': 2, 'code': 'LND.XWIND',           'title': 'Crosswind Landings'},
+  {'id': 6040, 'group_id': 6, 'stage': 3, 'code': 'LND.OV.OBST',         'title': 'Landing Over an Obstacle'},
+  {'id': 6050, 'group_id': 6, 'stage': 3, 'code': 'LND.SIM.OFFFLD',      'title': 'Sim. Off-Field Landing'},
+  {'id': 6060, 'group_id': 6, 'stage': 3, 'code': 'LND.DWIND',           'title': 'Downwind Landings'},
+  {'id': 6070, 'group_id': 6, 'stage': 3, 'code': 'LND.HIGH.WIND',       'title': 'High Wind Landings'},
+  {'id': 6080, 'group_id': 6, 'stage': 3, 'code': 'LND.HIGH.ALT',        'title': 'High Altitude Landings'},
+
+  // LFT - Flying in Lift
+  {'id': 7010, 'group_id': 7, 'stage': 2, 'code': 'LFT.THERMAL',         'title': 'Thermaling'},
+  {'id': 7020, 'group_id': 7, 'stage': 2, 'code': 'LFT.MNT.WAVE',        'title': 'Mountain Wave'},
+  {'id': 7030, 'group_id': 7, 'stage': 2, 'code': 'LFT.RIDGE',           'title': 'Ridge Lift'},
+  {'id': 7040, 'group_id': 7, 'stage': 2, 'code': 'LFT.CONVERGE',        'title': 'Convergence/Shear'},
+
+  // EP - Emergency Procedures
+  {'id': 8010, 'group_id': 8, 'stage': 2, 'code': 'EP.PTT',              'title': 'Premature Tow Release'},
+  {'id': 8021, 'group_id': 8, 'stage': 2, 'code': 'EP.SIM.RB.AHEAD',     'title': 'Sim-RB Straight Ahead'},
+  {'id': 8022, 'group_id': 8, 'stage': 2, 'code': 'EP.SIM.RB.180',       'title': 'Sim-RB 180° Turn'},
+  {'id': 8023, 'group_id': 8, 'stage': 2, 'code': 'EP.SIM.RB.ABBR',      'title': 'Sim-RB Abbreviated Pattern'},
+  {'id': 8030, 'group_id': 8, 'stage': 2, 'code': 'EP.ROCK.OFF',         'title': 'Rock Off'},
+  {'id': 8040, 'group_id': 8, 'stage': 2, 'code': 'EP.PWR.LOSS.TO',      'title': 'Power Loss During T.O.'},
+  {'id': 8050, 'group_id': 8, 'stage': 2, 'code': 'EP.PWR.LOSS.ALT',     'title': 'Power Loss at Altitude'},
+  {'id': 8060, 'group_id': 8, 'stage': 2, 'code': 'EP.SIM.REL.FAIL',     'title': 'Simult. Release Failure'},
+  {'id': 8070, 'group_id': 8, 'stage': 3, 'code': 'EP.SPIRAL.DIVE',      'title': 'Spiral Dive Recovery'},
+  {'id': 8080, 'group_id': 8, 'stage': 3, 'code': 'EP.UNUSUAL.ATT',      'title': 'Unusual Attitude Recovery'},
+  {'id': 8090, 'group_id': 8, 'stage': 3, 'code': 'EP.INTERCEPT',        'title': 'Intercept Procedures'},
+
+  // ADM - Aeronautical Decision Making
+  {'id': 9010, 'group_id': 9, 'stage': 2, 'code': 'ADM.SA',              'title': 'Situational Awareness'},
+  {'id': 9020, 'group_id': 9, 'stage': 2, 'code': 'ADM.JDGMT',           'title': 'Judgment'},
+  {'id': 9030, 'group_id': 9, 'stage': 2, 'code': 'ADM.SELF.DISC',       'title': 'Self-Discipline'},
+];
